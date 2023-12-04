@@ -47,7 +47,8 @@ services:
       - 9091:80
     environment:
       - PMA_ARBITRARY=1  
-      - laravel 
+    networks:
+      - laravel
 
   php:
     build:
