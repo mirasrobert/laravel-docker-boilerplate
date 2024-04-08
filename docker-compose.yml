@@ -1,0 +1,68 @@
+version: '3'
+
+networks:
+  laravel:
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/nginx.dockerfile
+      args:
+        - NGINXUSER=${NGINXUSER:-www-data}
+        - NGINXGROUP=${NGINXGROUP:-www-data}
+    container_name: nginx
+    ports:
+      - "9090:80"
+    volumes:
+      - ./src:/var/www/html:delegated
+    depends_on:
+      - php
+      - db
+    networks:
+      - laravel
+
+  db:
+    image: mariadb:10.6
+    container_name: db
+    restart: always
+    tty: true
+    ports:
+      - "9092:3306"
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: codebayan
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - laravel
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: 'phpmyadmin'
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 9091:80
+    environment:
+      - PMA_ARBITRARY=1  
+    networks:
+      - laravel
+
+  php:
+    build:
+      context: .
+      dockerfile: ./docker/php/phpv2.dockerfile
+      args:
+        - PHPUSER=${PHPUSER:-www-data}
+        - PHPGROUP=${PHPGROUP:-www-data}
+    container_name: php
+    volumes:
+      - ./src:/var/www/html:delegated
+    networks:
+      - laravel
