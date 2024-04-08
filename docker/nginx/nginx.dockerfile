@@ -10,7 +10,7 @@ ENV NGINXUSER=${NGINXUSER}
 RUN sed -i "s/user www-data/user ${NGINXUSER}/g" /etc/nginx/nginx.conf
 
 # Add Nginx Configuration [Reverse Proxy]
-ADD ./nginx/default.conf /etc/nginx/conf.d/
+ADD ./docker/nginx/default.conf /etc/nginx/conf.d/
 
 # Create directorty if not exist
 RUN mkdir -p /var/www/html

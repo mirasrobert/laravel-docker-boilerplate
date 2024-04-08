@@ -8,15 +8,7 @@ ENV PHPUSER=${PHPUSER}
 
 RUN addgroup -g 1000 ${PHPGROUP} && adduser -g ${PHPGROUP} -s /bin/sh -D ${PHPUSER}; exit 0
 
-RUN mkdir -p /var/www/html
-
-# Set permissions for Laravel storage logs directory
-RUN mkdir -p /var/www/html/storage/logs \
-    && chown -R www-data:www-data /var/www/html/storage/logs \
-    && chmod -R 775 /var/www/html/storage/logs
-
-WORKDIR /var/www/html
-
+# Change user and group
 RUN sed -i "s/user = www-data/user = ${PHPUSER}/g" /usr/local/etc/php-fpm.d/www.conf
 RUN sed -i "s/group = www-data/group = ${PHPGROUP}/g" /usr/local/etc/php-fpm.d/www.conf
 
@@ -42,13 +34,10 @@ COPY ./src .
 RUN mkdir -p /usr/local/bin
 
 # Copy the permission.sh script into the Docker image
-COPY permission.sh /usr/local/bin/permission.sh
+COPY ./docker/php/permission.sh /usr/local/bin/permission.sh
 
 # Make the script executable
 RUN chmod +x /usr/local/bin/permission.sh
-
-# Run the script during the Docker build process
-RUN /usr/local/bin/permission.sh
 
 # Run permission bash and php fpm
 CMD ["/bin/bash", "-c", "/usr/local/bin/permission.sh && php-fpm -y /usr/local/etc/php-fpm.conf -R"]
