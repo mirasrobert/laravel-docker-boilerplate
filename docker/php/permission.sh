@@ -4,4 +4,4 @@
 cd /var/www/html || exit
 
 # Run chmod command for bootstrap and storage folder
-chmod 777 -R bootstrap storage
+chmod 775 -R bootstrap storage
