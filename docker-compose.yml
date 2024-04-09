@@ -81,6 +81,7 @@ services:
 
   npm:
     image: node:18.16.0
+    container_name: npm
     volumes:
       - ./src:/var/www/html
     ports:
