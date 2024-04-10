@@ -9,8 +9,8 @@ services:
       context: .
       dockerfile: ./docker/nginx/nginx.dockerfile
       args:
-        - NGINXUSER=${NGINXUSER:-www-data}
-        - NGINXGROUP=${NGINXGROUP:-www-data}
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
     container_name: nginx
     ports:
       - "9090:80"
@@ -59,8 +59,8 @@ services:
       context: .
       dockerfile: ./docker/php/phpv2.dockerfile
       args:
-        - PHPUSER=${PHPUSER:-www-data}
-        - PHPGROUP=${PHPGROUP:-www-data}
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
     container_name: php
     volumes:
       - ./src:/var/www/html:delegated
@@ -72,6 +72,7 @@ services:
     container_name: composer
     volumes:
       - ./src:/var/www/html
+    user: "1000:1000"
     working_dir: /var/www/html
     depends_on:
       - php
@@ -84,6 +85,7 @@ services:
     container_name: npm
     volumes:
       - ./src:/var/www/html
+    user: "1000:1000"
     ports:
       - "3000:3000"
       - "3001:3001"

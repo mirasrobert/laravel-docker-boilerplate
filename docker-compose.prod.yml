@@ -9,8 +9,8 @@ services:
       context: .
       dockerfile: ./docker/nginx/nginx.dockerfile
       args:
-        - NGINXUSER=${NGINXUSER:-www-data}
-        - NGINXGROUP=${NGINXGROUP:-www-data}
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
     container_name: nginx
     ports:
       - "80:80"
@@ -22,7 +22,6 @@ services:
     networks:
       - laravel
 
-  # Remove this db service if you are using other database services like AWS RDS.
   db:
     image: mariadb:10.6
     container_name: db
@@ -42,7 +41,6 @@ services:
     networks:
       - laravel
 
-  # Remove this phpmyadmin service if you are using other database services like AWS RDS.
   phpmyadmin:
     image: phpmyadmin
     container_name: 'phpmyadmin'
@@ -61,10 +59,38 @@ services:
       context: .
       dockerfile: ./docker/php/phpv2.dockerfile
       args:
-        - PHPUSER=${PHPUSER:-www-data}
-        - PHPGROUP=${PHPGROUP:-www-data}
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
     container_name: php
     volumes:
       - ./src:/var/www/html:delegated
+    networks:
+      - laravel
+
+  composer:
+    image: composer:2
+    container_name: composer
+    volumes:
+      - ./src:/var/www/html
+    user: "1000:1000"
+    working_dir: /var/www/html
+    depends_on:
+      - php
+    entrypoint: ['composer', '--ignore-platform-reqs']
+    networks:
+      - laravel
+
+  npm:
+    image: node:18.16.0
+    container_name: npm
+    volumes:
+      - ./src:/var/www/html
+    user: "1000:1000"
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "5173:5173"
+    working_dir: /var/www/html
+    entrypoint: [ 'npm' ]
     networks:
       - laravel
