@@ -11,6 +11,7 @@ services:
       args:
         - UID=${UID:-1000}
         - GID=${GID:-1000}
+        - NGINX_USER=${NGINX_USER:-laravel}
     container_name: nginx
     ports:
       - "9090:80"
@@ -57,10 +58,11 @@ services:
   php:
     build:
       context: .
-      dockerfile: ./docker/php/phpv2.dockerfile
+      dockerfile: ./docker/php/php.dockerfile
       args:
         - UID=${UID:-1000}
         - GID=${GID:-1000}
+        - PHP_USER=${PHP_USER:-laravel}
     container_name: php
     volumes:
       - ./src:/var/www/html:delegated
