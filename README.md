@@ -11,8 +11,15 @@ Create your laravel project inside "src" folder.
 Change db service MYSQL_DATABASE to your desired database.
 
 ## 3. Build docker
+
+### For Dev
 ```bash
 docker compose build --no-cache
+```
+
+### For Prod
+```
+docker-compose -f docker-compose.prod.yml build
 ```
 
 ## 4. Up Docker Containers
