@@ -7,13 +7,14 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: ./docker/nginx/nginx.dockerfile
+      dockerfile: ./docker/nginx/nginx.localuser.dockerfile
       args:
         - UID=${UID:-1000}
         - GID=${GID:-1000}
+        - USER=${USER:-laravel}
     container_name: nginx
     ports:
-      - "80:80"
+      - "9090:80"
     volumes:
       - ./src:/var/www/html:delegated
     depends_on:
@@ -28,7 +29,7 @@ services:
     restart: always
     tty: true
     ports:
-      - "3306:3306"
+      - "9092:3306"
     volumes:
       - ./docker/mysql:/var/lib/mysql
     environment:
@@ -57,10 +58,11 @@ services:
   php:
     build:
       context: .
-      dockerfile: ./docker/php/php.dockerfile
+      dockerfile: ./docker/php/php.localuser.dockerfile
       args:
         - UID=${UID:-1000}
         - GID=${GID:-1000}
+        - USER=${USER:-laravel}
     container_name: php
     volumes:
       - ./src:/var/www/html:delegated

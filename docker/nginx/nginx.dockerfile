@@ -1,19 +1,19 @@
 FROM nginx:stable-alpine
 
-ARG NGINXGROUP
-ARG NGINXUSER
+ARG UID
+ARG GID
+ARG NGINX_USER
 
-ENV NGINXGROUP=${NGINXGROUP}
-ENV NGINXUSER=${NGINXUSER}
+ENV UID=${UID}
+ENV GID=${GID}
+ENV NGINX_USER=${NGINX_USER}
 
-# Changing the user Nginx runs
-RUN sed -i "s/user www-data/user ${NGINXUSER}/g" /etc/nginx/nginx.conf
+RUN addgroup -g ${GID} --system ${NGINX_USER}
+RUN adduser -G ${NGINX_USER} --system -D -s /bin/sh -u ${UID} ${NGINX_USER}
+RUN sed -i "s/user  nginx/user ${NGINX_USER}/g" /etc/nginx/nginx.conf
 
 # Add Nginx Configuration [Reverse Proxy]
 ADD ./docker/nginx/default.conf /etc/nginx/conf.d/
 
 # Create directorty if not exist
 RUN mkdir -p /var/www/html
-
-# Create a group and user within the container
-RUN addgroup -g 1000 ${NGINXGROUP} && adduser -g ${NGINXGROUP} -s /bin/sh -D ${NGINXUSER}; exit 0
